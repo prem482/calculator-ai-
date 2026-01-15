@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ultra Premium AI Voice Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --bg:#050b14;
+  --glass:rgba(255,255,255,0.12);
+  --text:#fff;
+  --neon:#00f6ff;
+  --neon2:#8f00ff;
+}
+body.light{
+  --bg:#eef2f7;
+  --glass:rgba(255,255,255,.75);
+  --text:#000;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,system-ui;}
+
+body{
+  min-height:100vh;
+  background:radial-gradient(circle at top,var(--neon2),var(--bg));
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  padding:15px;
+}
+
+/* ===== MATH DREAM BACKGROUND ===== */
+.math-bg span{
+  position:absolute;
+  color:rgba(255,255,255,.08);
+  font-size:28px;
+  animation:float 20s linear infinite;
+}
+@keyframes float{
+  from{transform:translateY(110vh);}
+  to{transform:translateY(-10vh);}
+}
+
+/* APP */
+.app{
+  width:100%;
+  max-width:420px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  position:relative;
+  z-index:2;
+}
+
+/* HISTORY TOGGLE */
+.history-toggle{
+  background:linear-gradient(135deg,var(--neon),var(--neon2));
+  border:none;
+  padding:10px;
+  border-radius:14px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* CALCULATOR */
+.calculator{
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border-radius:26px;
+  padding:18px;
+  box-shadow:0 0 40px rgba(0,246,255,.35);
+  color:var(--text);
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+.top span{cursor:pointer}
+
+.display{
+  background:rgba(0,0,0,.35);
+  border-radius:18px;
+  padding:14px;
+  text-align:right;
+}
+.display small{opacity:.6;font-size:13px;}
+.display h1{font-size:28px;word-break:break-all;}
+
+.buttons{
+  margin-top:14px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+button{
+  height:50px;
+  border:none;
+  border-radius:16px;
+  background:rgba(255,255,255,.18);
+  color:var(--text);
+  font-size:15px;
+  cursor:pointer;
+}
+button:hover{box-shadow:0 0 10px var(--neon);}
+.operator{color:var(--neon);}
+.equal{
+  grid-column:span 4;
+  background:linear-gradient(135deg,var(--neon),var(--neon2));
+  color:#000;
+  font-weight:600;
+}
+
+/* HISTORY */
+.history{
+  display:none;
+  background:var(--glass);
+  backdrop-filter:blur(18px);
+  border-radius:22px;
+  padding:15px;
+  color:var(--text);
+}
+.history ul{list-style:none;max-height:180px;overflow:auto;}
+.history li{font-size:14px;opacity:.85;margin-bottom:6px;}
+
+/* DESKTOP */
+@media(min-width:768px){
+  body{align-items:center;}
+  .app{max-width:720px;flex-direction:row;}
+  .history-toggle{display:none;}
+  .history{display:block;width:240px;}
+  .calculator{width:380px;}
+  .buttons{grid-template-columns:repeat(5,1fr);}
+  .equal{grid-column:span 2;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND SYMBOLS -->
+<div class="math-bg">
+  <span style="left:10%">π</span>
+  <span style="left:25%;animation-delay:3s">√</span>
+  <span style="left:40%;animation-delay:6s">∑</span>
+  <span style="left:55%;animation-delay:2s">sin</span>
+  <span style="left:70%;animation-delay:5s">cos</span>
+  <span style="left:85%;animation-delay:1s">tan</span>
+</div>
+
+<div class="app">
+
+<button class="history-toggle" onclick="toggleHistory()">📜 Show / Hide History</button>
+
+<div class="calculator">
+  <div class="top">
+    <span>⚡ Ultra Premium</span>
+    <span onclick="toggleTheme()">🌙</span>
+    <span onclick="startVoice()">🎤</span>
+  </div>
+
+  <div class="display">
+    <small id="historyLine">Say something…</small>
+    <h1 id="result">0</h1>
+  </div>
+
+  <div class="buttons">
+    <button onclick="clearAll()">C</button>
+    <button onclick="del()">⌫</button>
+    <button onclick="press('(')">(</button>
+    <button onclick="press(')')">)</button>
+    <button class="operator" onclick="press('/')">÷</button>
+
+    <button onclick="press('sin(')">sin</button>
+    <button onclick="press('cos(')">cos</button>
+    <button onclick="press('tan(')">tan</button>
+    <button onclick="press('Math.sqrt(')">√</button>
+    <button class="operator" onclick="press('*')">×</button>
+
+    <button onclick="press('7')">7</button>
+    <button onclick="press('8')">8</button>
+    <button onclick="press('9')">9</button>
+    <button onclick="press('**2')">x²</button>
+    <button class="operator" onclick="press('-')">−</button>
+
+    <button onclick="press('4')">4</button>
+    <button onclick="press('5')">5</button>
+    <button onclick="press('6')">6</button>
+    <button onclick="press('Math.log10(')">log</button>
+    <button class="operator" onclick="press('+')">+</button>
+
+    <button onclick="press('1')">1</button>
+    <button onclick="press('2')">2</button>
+    <button onclick="press('3')">3</button>
+    <button onclick="press('Math.PI')">π</button>
+
+    <button onclick="press('0')">0</button>
+    <button onclick="press('.')">.</button>
+    <button class="equal" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<div class="history" id="historyBox">
+  <h3>📜 History</h3>
+  <ul id="historyList"></ul>
+</div>
+
+</div>
+
+<script>
+let result=document.getElementById("result");
+let historyLine=document.getElementById("historyLine");
+let historyList=document.getElementById("historyList");
+let historyBox=document.getElementById("historyBox");
+let exp="";
+
+/* NORMAL CALC */
+function press(v){exp+=v;result.innerText=exp;}
+function calculate(){
+  try{
+    let f=eval(exp.replace(/sin|cos|tan/g,'Math.$&'));
+    historyLine.innerText=exp;
+    historyList.innerHTML+=`<li>${exp} = ${f}</li>`;
+    exp=f.toString();result.innerText=exp;
+  }catch{result.innerText="Error";exp="";}
+}
+function clearAll(){exp="";result.innerText="0";historyLine.innerText="";}
+function del(){exp=exp.slice(0,-1);result.innerText=exp||"0";}
+function toggleTheme(){document.body.classList.toggle("light");}
+function toggleHistory(){
+  historyBox.style.display =
+    historyBox.style.display==="block"?"none":"block";
+}
+
+/* ===== AI VOICE LISTENER ===== */
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if(SpeechRecognition){
+  const recognition = new SpeechRecognition();
+  recognition.lang="en-US";
+
+  function startVoice(){
+    historyLine.innerText="🎤 Listening...";
+    recognition.start();
+  }
+
+  recognition.onresult=function(e){
+    let text=e.results[0][0].transcript.toLowerCase();
+    historyLine.innerText="You said: "+text;
+
+    let expression=text
+      .replace(/plus/g,'+')
+      .replace(/minus/g,'-')
+      .replace(/into|multiply/g,'*')
+      .replace(/divide by|divided by/g,'/')
+      .replace(/square root of|square root/g,'Math.sqrt')
+      .replace(/pi/g,'Math.PI')
+      .replace(/sin/g,'Math.sin')
+      .replace(/cos/g,'Math.cos')
+      .replace(/tan/g,'Math.tan');
+
+    try{
+      let ans=eval(expression);
+      result.innerText=ans;
+      exp=ans.toString();
+      historyList.innerHTML+=`<li>${text} = ${ans}</li>`;
+    }catch{
+      result.innerText="Voice Error";
+    }
+  };
+}
+</script>
+
+</body>
+</html>
